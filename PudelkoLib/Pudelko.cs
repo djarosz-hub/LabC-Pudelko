@@ -49,6 +49,19 @@ namespace PudelkoLib
             total += a * c * 2;
             return Math.Round(total, 6);
         }
+        public static int CompareBox(Pudelko p1, Pudelko p2)
+        {
+            if (p1 is null && p2 is null) return 0;
+            if (p1 is null && !(p2 is null)) return -1;
+            if (!(p1 is null) && p2 is null) return +1;
+
+            if (p1.Objetosc != p2.Objetosc)
+                return (p1.Objetosc).CompareTo(p2.Objetosc);
+            if (p1.Pole != p2.Pole)
+                return (p1.Pole.CompareTo(p2.Pole));
+
+            return (p1.A + p1.B + p1.C).CompareTo(p2.A + p2.B + p2.C);
+        }
         double ChangeSystemToMeters()
         {
             if (unitSys == UnitOfMeasure.meter)

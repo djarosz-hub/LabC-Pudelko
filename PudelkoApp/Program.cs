@@ -1,16 +1,47 @@
 ﻿using System;
+using System.Collections.Generic;
 using PudelkoLib;
 
 namespace PudelkoApp
 {
-    class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
-            Pudelko p = new Pudelko(1, 2, 3, UnitOfMeasure.meter);
-            Console.WriteLine(p[0]);
-            Console.WriteLine(p[1]);
-            Console.WriteLine(p[2]);
+            //Pudelko p1 = new Pudelko(10, 10,10 );
+            //Pudelko p2 = p1.Kompresuj();
+            //Console.WriteLine(p1.ToString());
+            //Console.WriteLine(p2.ToString());
+            //Console.WriteLine(p1.Objetosc);
+            //Console.WriteLine(p2.Objetosc);
+
+            //List<Pudelko> lista = new List<Pudelko>();
+            //Pudelko p = new Pudelko(2, 5);
+            //Pudelko p1 = new Pudelko(1, 3, 4);
+            //Pudelko p2 = new Pudelko(0.5, 5.5, 3.3,UnitOfMeasure.milimeter);
+            //Pudelko p3 = new Pudelko(3.3);
+            //Pudelko p4 = new Pudelko(6, 5, 0.3, UnitOfMeasure.centimeter);
+            //Pudelko p5 = new Pudelko(5.2, 0.93);
+            //lista.Add(p1);
+            //lista.Add(p2);
+            //lista.Add(p3);
+            //lista.Add(p4);
+            //lista.Add(p5);
+            //foreach (var x in lista)
+            //{
+            //    Console.WriteLine(x);
+            //}
+            //lista.Sort(Pudelko.CompareBox);
+            //Console.WriteLine("------------");
+            //foreach (var x in lista)
+            //{
+            //    Console.WriteLine(x);
+            //}
+
+            //Pudelko p = new Pudelko(1, 2, 3, UnitOfMeasure.meter);
+            //Console.WriteLine(p[0]);
+            //Console.WriteLine(p[1]);
+            //Console.WriteLine(p[2]);
 
             //Console.WriteLine("Hello World!");
             //Pudelko p = new Pudelko(0.1, 2.5);
@@ -22,8 +53,8 @@ namespace PudelkoApp
             //Pudelko p2 = new Pudelko(a:-1.0);
             //Pudelko p = new Pudelko(unit: UnitOfMeasure.centimeter, a: 11);
             //Console.WriteLine(p.ToString());
-            //double x = 2.5559;
-            //string y = string.Format("{0:0.00}", x);
+            //double x = 2.59999;
+            //string y = string.Format("{0:0.000}", x);
             //double z = Convert.ToDouble(y);
             //Console.WriteLine(x);
             //Console.WriteLine(y);
@@ -65,6 +96,12 @@ namespace PudelkoApp
 
 
 
+        }
+        public static Pudelko Kompresuj(this Pudelko p)
+        {
+            double pudelkoObj = p.Objetosc;
+            double sqrt = Math.Pow(pudelkoObj, (double)1 / 3);
+            return new Pudelko(sqrt, sqrt, sqrt);
         }
     }
 }
