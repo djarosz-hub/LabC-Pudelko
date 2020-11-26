@@ -8,6 +8,11 @@ namespace PudelkoApp
     {
         static void Main(string[] args)
         {
+            double a = 0.77777;
+            Console.WriteLine(Math.Round(a,3));
+            a = Math.Truncate(1000 * a) / 1000;
+            Console.WriteLine(a);
+
             //Pudelko p1 = new Pudelko(10, 10,10 );
             //Pudelko p2 = p1.Kompresuj();
             //Console.WriteLine(p1.ToString());
