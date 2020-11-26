@@ -448,15 +448,47 @@ namespace PudelkoUnitTests
 
         #region Pole, Objêtoœæ ===================================
         // ToDo
+        [DataTestMethod]
+        [DataRow(10,5,3,150)]
+        [DataRow(0.3,0.5,10,1.5)]
+        [DataRow(0.1,0.1,0.1,0.001)]
+        [DataRow(2,2,3,12)]
+        public void ObjetoscTest(double a, double b, double c, double expectedValue)
+        {
+            var p = new Pudelko(a, b, c);
+            Assert.AreEqual(expectedValue,p.Objetosc);
+        }
 
+        [DataTestMethod]
+        [DataRow(5, 5, 5, 150)]
+        [DataRow(3,4,5,94)]
+        [DataRow(1.3, 2.5, 8.2, 68.82)]
+        [DataRow(0.05, 2.332, 0.42, 2.23408)]
+        public void PoleTest(double a, double b, double c, double expectedValue)
+        {
+            var p = new Pudelko(a, b, c);
+            Assert.AreEqual(expectedValue, p.Pole);
+        }
         #endregion
 
         #region Equals ===========================================
         // ToDo
+        [DataTestMethod]
+        [DataRow(1, 2.1, 3.05, 1000, 3050, 2100,UnitOfMeasure.milimeter)]
+        [DataRow(1, 2.1, 3.05, 1, 3.05, 2.1, UnitOfMeasure.meter)]
+        [DataRow(10,10,10,1000,1000,1000,UnitOfMeasure.centimeter)]
+
+        public void EqualsTest(double a, double b, double c, double a1, double b1, double c1, UnitOfMeasure unit)
+        {
+            Pudelko p = new Pudelko(a, b, c);
+            Pudelko p1 = new Pudelko(a1, b1, c1,unit);
+            Assert.AreEqual(p, p1);
+        }
         #endregion
 
         #region Operators overloading ===========================
         // ToDo
+
         #endregion
 
         #region Conversions =====================================

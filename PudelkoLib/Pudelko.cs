@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 
 namespace PudelkoLib
 {
-    public sealed class Pudelko : IFormattable, IEquatable<Pudelko>, IEnumerable<Pudelko>
+    public sealed class Pudelko : IFormattable, IEquatable<Pudelko>/*, IEnumerable*/
     {
         private readonly UnitOfMeasure unitSys;
         private readonly double a;
@@ -31,7 +33,6 @@ namespace PudelkoLib
         public double Objetosc => Math.Round(A * B * C, 9);
         public double Pole => GetAreaOfBox(A, B, C);
 
-        //TODO constructor doesn't convert default values
         public Pudelko(double a = -999, double b = -999, double c = -999, UnitOfMeasure unit = UnitOfMeasure.meter)
         {
             if (a == -999)
@@ -213,7 +214,7 @@ namespace PudelkoLib
             if (other is null) return false;
             if (Object.ReferenceEquals(this, other)) return true;
             //return (A == other.A && B == other.B && C == other.C);
-            //patterns to check: ABC ACB BCA CBA
+            //patterns to check: ABC ACB BCA BAC CBA CAB 
             if (A == other.A && B == other.B && C == other.C)
                 return true;
             else if (A == other.A && B == other.C && C == other.B)
@@ -221,6 +222,10 @@ namespace PudelkoLib
             else if (A == other.B && B == other.C && C == other.A)
                 return true;
             else if (A == other.C && B == other.B && C == other.A)
+                return true;
+            else if (A == other.B && B == other.A && C == other.C)
+                return true;
+            else if (A == other.C && B == other.A && C == other.B)
                 return true;
             else
                 return false;
@@ -235,9 +240,43 @@ namespace PudelkoLib
             if ((p1 is null)) return false;
             return p1.Equals(p2);
         }
+        public static Pudelko Parse(string parseInput)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            UnitOfMeasure unit;
+            double a, b, c;
+            string[] tab = parseInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (tab[1] == "m" && tab[4] == "m" && tab[7] == "m")
+                unit = UnitOfMeasure.meter;
+            else if (tab[1] == "cm" && tab[4] == "cm" && tab[7] == "cm")
+                unit = UnitOfMeasure.centimeter;
+            else if (tab[1] == "mm" && tab[4] == "mm" && tab[7] == "mm")
+                unit = UnitOfMeasure.milimeter;
+            else
+                throw new FormatException("not supported format of input");
+            if (double.TryParse(tab[0], out a) && double.TryParse(tab[3], out b) && double.TryParse(tab[6], out c))
+                return new Pudelko(a, b, c, unit);
+            else
+                throw new FormatException("not supported format of input");
+
+
+        }
         public override int GetHashCode() => (A, B, C).GetHashCode();
+
+        //public IEnumerator GetEnumerator()
+        //{
+            
+        //}
+
         public static bool operator ==(Pudelko p1, Pudelko p2) => Equals(p1, p2);
         public static bool operator !=(Pudelko p1, Pudelko p2) => !(p1 == p2);
+        //public static Pudelko operator +(Pudelko p1, Pudelko p2)
+        //{
+        //    //patterns to check: ABC ACB BCA CBA
+        //    double[] p1Measures = new double[] { p1.A, p1.B, p1.C };
+        //    double[] p2Measures = new double[] { p2.A, p2.B, p2.C };
+
+        //}
         #endregion
     }
 }
