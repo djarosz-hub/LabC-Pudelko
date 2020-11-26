@@ -5,27 +5,51 @@ using System.Text;
 
 namespace PudelkoLib
 {
-    public sealed class Pudelko : IFormattable
+    public sealed class Pudelko : IFormattable, IEquatable<Pudelko>
     {
         private readonly UnitOfMeasure unitSys;
         private readonly double a;
         private readonly double b;
         private readonly double c;
-        public string A => string.Format("{0:0.000}m", a * getCurrentUnitSystem());
-        public string B => string.Format("{0:0.000}m", b * getCurrentUnitSystem());
-        public string C => string.Format("{0:0.000}m", c * getCurrentUnitSystem());
+        public double this[int index]
+        {
+            get
+            {
+                if (index == 0)
+                    return a;
+                if (index == 1)
+                    return b;
+                if (index == 2)
+                    return c;
+                return -1;
+            }
+        }
+        public double A => Math.Round(a * ChangeSystemToMeters(), 3);
+        public double B => Math.Round(b * ChangeSystemToMeters(), 3);
+        public double C => Math.Round(c * ChangeSystemToMeters(), 3);
 
+        public double Objetosc => Math.Round(A * B * C, 9);
+        public double Pole => GetAreaOfBox(A,B,C);
+
+        //TODO constructor doesn't convert default values
         public Pudelko(double a = 0.1, double b = 0.1, double c = 0.1, UnitOfMeasure unit = UnitOfMeasure.meter)
         {
-            dataCheck(a, b, c, unit);
+            BoxMeasurmentValidation(a, b, c, unit);
             this.a = a;
             this.b = b;
             this.c = c;
             unitSys = unit;
         }
 
-
-        double getCurrentUnitSystem()
+        double GetAreaOfBox(double a, double b, double c)
+        {
+            double total = 0;
+            total += a * b * 2;
+            total += b * c * 2;
+            total += a * c * 2;
+            return Math.Round(total, 6);
+        }
+        double ChangeSystemToMeters()
         {
             if (unitSys == UnitOfMeasure.meter)
                 return 1;
@@ -34,9 +58,43 @@ namespace PudelkoLib
             else
                 return 0.1 * 0.1 * 0.1;
         }
-        void dataCheck(double a, double b, double c, UnitOfMeasure unit)
+        double ReturnCorrectUnitSystem(UnitOfMeasure current, string target)
         {
-            if (a < 0 || b < 0 || c < 0)
+            switch (target)
+            {
+                case "m":
+                    {
+                        if (current == UnitOfMeasure.meter)
+                            return 1;
+                        else if (current == UnitOfMeasure.centimeter)
+                            return 0.1 * 0.1;
+                        else
+                            return 0.1 * 0.1 * 0.1;
+                    }
+                case "cm":
+                    {
+                        if (current == UnitOfMeasure.meter)
+                            return 100;
+                        else if (current == UnitOfMeasure.centimeter)
+                            return 1;
+                        else
+                            return 0.1;
+                    }
+                case "mm":
+                    {
+                        if (current == UnitOfMeasure.meter)
+                            return 1000;
+                        else if (current == UnitOfMeasure.centimeter)
+                            return 10;
+                        else
+                            return 1;
+                    }
+            }
+            throw new ArgumentException("unhandled unit system");
+        }
+        void BoxMeasurmentValidation(double a, double b, double c, UnitOfMeasure unit)
+        {
+            if (a <= 0 || b <= 0 || c <= 0)
                 throw new ArgumentOutOfRangeException();
             switch (unit)
             {
@@ -55,6 +113,8 @@ namespace PudelkoLib
             }
 
         }
+        //toString override
+        #region
 
         public override string ToString()
         {
@@ -70,18 +130,52 @@ namespace PudelkoLib
         {
             if (String.IsNullOrEmpty(format)) format = "m";
             if (provider == null) provider = new CultureInfo("en-US");
-
+            char X = '\u00D7';
             switch (format)
             {
                 case "m":
-                    return "";
-                case "mm":
-                    return "";
+                    return string.Format("{0:0.000} m {3} {1:0.000} m {3} {2:0.000} m", a * ReturnCorrectUnitSystem(unitSys, format), b * ReturnCorrectUnitSystem(unitSys, format), c * ReturnCorrectUnitSystem(unitSys, format), X);
                 case "cm":
-                    return "";
+                    return string.Format("{0:0.0} cm {3} {1:0.0} cm {3} {2:0.0} cm", a * ReturnCorrectUnitSystem(unitSys, format), b * ReturnCorrectUnitSystem(unitSys, format), c * ReturnCorrectUnitSystem(unitSys, format), X);
+                case "mm":
+                    return string.Format("{0:0} mm {3} {1:0} mm {3} {2:0} mm", a * ReturnCorrectUnitSystem(unitSys, format), b * ReturnCorrectUnitSystem(unitSys, format), c * ReturnCorrectUnitSystem(unitSys, format), X);
                 default:
                     throw new FormatException(String.Format("The {0} format string is not supported.", format));
             }
         }
+        #endregion
+        //IEquatable implementation
+        #region
+        public bool Equals(Pudelko other)
+        {
+            if (other is null) return false;
+            if (Object.ReferenceEquals(this, other)) return true;
+            //return (A == other.A && B == other.B && C == other.C);
+            //patterns to check: ABC ACB BCA CBA
+            if (A == other.A && B == other.B && C == other.C)
+                return true;
+            else if (A == other.A && B == other.C && C == other.B)
+                return true;
+            else if (A == other.B && B == other.C && C == other.A)
+                return true;
+            else if (A == other.C && B == other.B && C == other.A)
+                return true;
+            else
+                return false;
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is Pudelko ? Equals((Pudelko)obj) : false;
+        }
+        public static bool Equals(Pudelko p1, Pudelko p2)
+        {
+            if ((p1 is null) && (p2 is null)) return true;
+            if ((p1 is null)) return false;
+            return p1.Equals(p2);
+        }
+        public override int GetHashCode() => (A, B, C).GetHashCode();
+        public static bool operator ==(Pudelko p1, Pudelko p2) => Equals(p1, p2);
+        public static bool operator !=(Pudelko p1, Pudelko p2) => !(p1 == p2);
+        #endregion
     }
 }
